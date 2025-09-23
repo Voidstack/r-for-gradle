@@ -17,6 +17,7 @@ import java.nio.file.Paths;
  *   <li><b>Always work:</b> {@link #getName()}, {@link #getResourcePath()}, {@link #getAbsoluteURL()}, {@link #getAbsolutePath()}, {@link #exists()}</li>
  * </ul>
  */
+@SuppressWarnings("unused")
 public class RFolder {
     protected final String folderName;
     protected final String folderPath;

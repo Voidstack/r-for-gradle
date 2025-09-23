@@ -9,7 +9,8 @@ import javax.inject.Inject;
 /**
  * Extension class for configuring the GenerateR plugin.
  */
-public class GenerateRExtension {
+@SuppressWarnings("unused")
+class GenerateRExtension {
     private final Property<Boolean> keepInProjectFiles;
     private final DirectoryProperty resourcesDir;
     private final Property<String> packageName;

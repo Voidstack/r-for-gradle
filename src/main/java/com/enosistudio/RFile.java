@@ -27,6 +27,7 @@ import java.nio.file.StandardCopyOption;
  *       {@link #getBaseName()}, etc.</li>
  * </ul>
  */
+@SuppressWarnings("unused")
 public final class RFile {
     private final String resourcePath;
     private final String fileName;

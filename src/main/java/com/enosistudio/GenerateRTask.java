@@ -16,6 +16,7 @@ import java.util.*;
  * The generated class will be named R and will contain a hierarchical structure
  * for accessing files and folders.
  */
+@SuppressWarnings("unused")
 public class GenerateRTask extends DefaultTask {
     private static final String PATH_SEPARATOR = "/";
 
