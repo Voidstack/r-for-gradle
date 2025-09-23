@@ -1,374 +1,150 @@
-\# R for Gradle
+# 🚀 R for Gradle
 
+[![Maven Central](https://img.shields.io/maven-central/v/com.enosistudio/r-for-gradle.svg)](https://central.sonatype.com/artifact/com.enosistudio/r-for-gradle)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![Java](https://img.shields.io/badge/Java-11%2B-brightgreen.svg)](https://openjdk.java.net/)
 
+> **Type-safe hierarchical resource access for Java Gradle projects - inspired by Android's R.java!**
 
-Plugin Gradle pour générer automatiquement une classe R.java avec des constantes pour tous vos fichiers de ressources, similaire à la classe R.java d'Android.
+Generate a type-safe `R.java` class that mirrors your resource directory structure. Access files and folders with intuitive syntax like `R.config.database.readContent()` while enjoying full IDE autocompletion and compile-time safety.
 
+---
 
+## ✨ Features
 
-\## Installation
+* 📁 **Hierarchical Structure** – Mirrors your `src/main/resources` directory
+* 🏗️ **Gradle Integration** – Generates during Gradle build
+* 🔤 **Smart Naming** – Converts file/folder names to camelCase Java identifiers
+* 📖 **Rich File API** – Read, stream, and manipulate paths easily
+* 📂 **Folder Methods** – Access folder metadata with `_self.getName()` and `_self.getPath()`
+* ⚡ **Fast Generation** – Lightweight and efficient
 
+---
 
+## 📦 Installation
 
-\### Option 1: Plugin DSL (Recommandé)
-
-
+Add the plugin to your `build.gradle`:
 
 ```gradle
-
 plugins {
-
-&nbsp;   id 'com.enosistudio.r-for-gradle' version '1.0.2'
-
+    id "com.enosistudio.r-for-gradle" version "1.0.2"
 }
 
-```
-
-
-
-\### Option 2: Legacy Plugin Application
-
-
-
-```gradle
-
-buildscript {
-
-&nbsp;   repositories {
-
-&nbsp;       gradlePluginPortal()
-
-&nbsp;   }
-
-&nbsp;   dependencies {
-
-&nbsp;       classpath 'com.enosistudio:r-for-gradle:1.0.2'
-
-&nbsp;   }
-
+dependencies {
+    implementation "com.enosistudio:r-for-gradle:1.0.2"
 }
 
-
-
-apply plugin: 'com.enosistudio.r-for-gradle'
-
-```
-
-
-
-\## Configuration
-
-
-
-Vous pouvez configurer le plugin dans votre `build.gradle` :
-
-
-
-```gradle
-
-generateR {
-
-&nbsp;   // Garder les fichiers générés dans src/main/java au lieu de build/generated
-
-&nbsp;   keepInProjectFiles = true // défaut: true
-
-&nbsp;   
-
-&nbsp;   // Répertoire des ressources à scanner
-
-&nbsp;   resourcesDir = file('src/main/resources') // défaut
-
-&nbsp;   
-
-&nbsp;   // Package de la classe R générée
-
-&nbsp;   packageName = 'com.votre.package.generated' // défaut: com.enosistudio.generated
-
-&nbsp;   
-
-&nbsp;   // Répertoire de sortie pour les sources générées (si keepInProjectFiles = false)
-
-&nbsp;   outputTargetDirectory = file('build/generated/sources/r')
-
-&nbsp;   
-
-&nbsp;   // Répertoire de sortie pour les sources du projet (si keepInProjectFiles = true)
-
-&nbsp;   outputSrcDirectory = file('src/main/java')
-
+generateR{
+  keepInProjectFiles = false // Optional: Keep generated R files in the project directory or not
+  // Other optionnal conf ...
 }
-
 ```
 
+---
 
+## 🏃‍♂️ Usage
 
-\## Utilisation
-
-
-
-\### Génération automatique
-
-
-
-Le plugin s'exécute automatiquement avant la compilation Java. Vous pouvez aussi l'exécuter manuellement :
-
-
-
-```bash
-
-./gradlew generateR
-
-```
-
-
-
-\### Exemple d'utilisation
-
-
-
-Si vous avez cette structure de ressources :
-
-
-
-```
-
-src/main/resources/
-
-├── config.properties
-
-├── templates/
-
-│   ├── email.html
-
-│   └── report.pdf
-
-└── images/
-
-&nbsp;   ├── logo.png
-
-&nbsp;   └── icons/
-
-&nbsp;       └── home.png
-
-```
-
-
-
-La classe R générée ressemblera à :
-
-
+### Before (❌ Error-prone)
 
 ```java
+// Hardcoded strings everywhere!
+InputStream config = getClass().getResourceAsStream("/config/database.properties");
+InputStream logo = getClass().getResourceAsStream("/images/icons/logo.png");
 
+// Typos cause runtime errors 💥
+String content = Files.readString(Paths.get("config/databse.properties")); // Whoops!
+```
+
+### After (✅ Type-safe & Intuitive)
+
+```java
+import com.enosistudio.generated.R;
+
+// Hierarchical access with autocompletion!
+String content = R.config.databaseProperties.readContent();
+InputStream logo = R.images.icons.logoPng.openStream();
+URL resource = R.templates.emailHtml.getURL();
+
+// Folder information
+String folderName = R.config._self.getName();     // "config"
+String folderPath = R.config._self.getPath();     // "config"
+
+// Compile-time safety 🛡️
+R.config.databseProperties.readContent(); // Won't compile - typo caught!
+```
+
+---
+
+## 📂 Generated Structure
+
+**Resources:**
+
+```
+src/main/resources/
+├── config/
+│   ├── database.properties
+│   └── app-settings.yml
+├── templates/
+│   ├── email.html
+│   └── reports/
+│       └── invoice.pdf
+└── logo.png
+```
+
+**Generated R.java:**
+
+```java
 package com.enosistudio.generated;
 
-
-
 public final class R {
-
-&nbsp;   public static final RFile configProperties = new RFile("config.properties");
-
-&nbsp;   
-
-&nbsp;   public static final class Templates extends RFolder {
-
-&nbsp;       public static final RFolder \_self = new Templates();
-
-&nbsp;       private Templates() { super("templates", "templates"); }
-
-&nbsp;       
-
-&nbsp;       public static final RFile emailHtml = new RFile("templates/email.html");
-
-&nbsp;       public static final RFile reportPdf = new RFile("templates/report.pdf");
-
-&nbsp;   }
-
-&nbsp;   
-
-&nbsp;   public static final class Images extends RFolder {
-
-&nbsp;       public static final RFolder \_self = new Images();
-
-&nbsp;       private Images() { super("images", "images"); }
-
-&nbsp;       
-
-&nbsp;       public static final RFile logoPng = new RFile("images/logo.png");
-
-&nbsp;       
-
-&nbsp;       public static final class Icons extends RFolder {
-
-&nbsp;           public static final RFolder \_self = new Icons();
-
-&nbsp;           private Icons() { super("icons", "images/icons"); }
-
-&nbsp;           
-
-&nbsp;           public static final RFile homePng = new RFile("images/icons/home.png");
-
-&nbsp;       }
-
-&nbsp;   }
-
+    public static final RFile logoPng = new RFile("logo.png");
+    
+    public static final class config extends RFolder {
+        public static final RFolder _self = new config();
+        private config() { super("config", "config"); }
+        
+        public static final RFile databaseProperties = new RFile("config/database.properties");
+        public static final RFile appSettingsYml = new RFile("config/app-settings.yml");
+    }
+    
+    public static final class templates extends RFolder {
+        public static final RFolder _self = new templates();
+        private templates() { super("templates", "templates"); }
+        
+        public static final RFile emailHtml = new RFile("templates/email.html");
+        
+        public static final class reports extends RFolder {
+            public static final RFolder _self = new reports();
+            private reports() { super("reports", "templates/reports"); }
+            
+            public static final RFile invoicePdf = new RFile("templates/reports/invoice.pdf");
+        }
+    }
+    
+    public static class RFolder { /* folder methods */ }
+    public static final class RFile { /* rich file API */ }
 }
-
 ```
 
+---
 
+## ⚙️ Configuration
 
-\### Dans votre code Java
+| Parameter               | Default                     | Description                             |
+| ----------------------- | --------------------------- | --------------------------------------- |
+| `keepInProjectFiles`    | `true`                      | Keep generated files in `src/main/java` |
+| `resourcesDir`          | `src/main/resources`        | Resources directory to scan             |
+| `packageName`           | `com.enosistudio.generated` | Package for generated R.java            |
+| `outputSrcDirectory`    | `src/main/java`             | Output when `keepInProjectFiles=true`   |
+| `outputTargetDirectory` | `build/generated/sources`   | Output when `keepInProjectFiles=false`  |
 
+---
 
+## 🔧 Requirements
 
-```java
+* ☕ Java 11+
+* 🔨 Gradle 7+
 
-// Accéder à un fichier
+---
 
-InputStream configStream = R.configProperties.getInputStream();
-
-String configPath = R.configProperties.getPath(); // "config.properties"
-
-
-
-// Accéder à un fichier dans un sous-dossier
-
-InputStream logoStream = R.Images.logoPng.getInputStream();
-
-URL logoUrl = R.Images.logoPng.getURL();
-
-
-
-// Accéder à un dossier
-
-String templatesPath = R.Templates.\_self.getPath(); // "templates"
-
-File templatesDir = R.Templates.\_self.getFile();
-
-```
-
-
-
-\## Structure du projet
-
-
-
-```
-
-src/
-
-├── main/
-
-│   └── java/
-
-│       └── com/
-
-│           └── enosistudio/
-
-│               ├── GenerateRPlugin.java
-
-│               ├── GenerateRTask.java
-
-│               └── GenerateRExtension.java
-
-└── test/
-
-&nbsp;   └── java/
-
-&nbsp;       └── com/
-
-&nbsp;           └── enosistudio/
-
-&nbsp;               └── GenerateRPluginTest.java
-
-```
-
-
-
-\## Compatibilité
-
-
-
-\- Java 17+
-
-\- Gradle 7.0+
-
-
-
-\## Différences avec la version Maven
-
-
-
-1\. \*\*Configuration\*\* : Utilise une extension Gradle au lieu de paramètres Maven
-
-2\. \*\*Tâches\*\* : Intégration avec le système de tâches Gradle
-
-3\. \*\*Dépendances\*\* : Utilise l'API Gradle au lieu de l'API Maven
-
-4\. \*\*Publication\*\* : Configuration pour Gradle Plugin Portal
-
-
-
-\## Développement
-
-
-
-\### Test local
-
-
-
-```bash
-
-./gradlew publishToMavenLocal
-
-```
-
-
-
-Puis dans un autre projet :
-
-
-
-```gradle
-
-buildscript {
-
-&nbsp;   repositories {
-
-&nbsp;       mavenLocal()
-
-&nbsp;       gradlePluginPortal()
-
-&nbsp;   }
-
-&nbsp;   dependencies {
-
-&nbsp;       classpath 'com.enosistudio:r-for-gradle:1.0.2'
-
-&nbsp;   }
-
-}
-
-
-
-apply plugin: 'com.enosistudio.r-for-gradle'
-
-```
-
-
-
-\### Publication
-
-
-
-Pour publier sur Gradle Plugin Portal :
-
-
-
-```bash
-
-./gradlew publishPlugins
-
-```
-
+⭐ **Star this repo if it helps!**
