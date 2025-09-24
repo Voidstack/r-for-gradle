@@ -1,7 +1,6 @@
 plugins {
-    id 'java-gradle-plugin'
-    id 'maven-publish'
-    id 'signing'
+    id("java")
+    id "com.vanniktech.maven.publish" version "0.34.0"
 }
 
 group = 'com.enosistudio'
@@ -15,8 +14,6 @@ ext {
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
-    withSourcesJar()
-    withJavadocJar()
 }
 
 repositories {
@@ -35,96 +32,36 @@ dependencies {
     testImplementation gradleTestKit()
 }
 
-gradlePlugin {
-    website = 'https://github.com/Voidstack/r-for-gradle'
-    vcsUrl = 'https://github.com/Voidstack/r-for-gradle'
-
-    plugins {
-        rForGradle {
-            id = 'com.enosistudio.r-for-gradle'
-            implementationClass = 'com.enosistudio.GenerateRPlugin'
-            displayName = 'r-for-gradle'
-            description = 'Generate compile-time constants for all your resource files automatically, just like Android\'s R.java class.'
-        }
-    }
-}
-
-tasks.named('test') {
+tasks.test {
     useJUnitPlatform()
 }
 
-// Javadoc configuration
-tasks.named('javadoc') {
-    options.encoding = encoding
-    if(JavaVersion.current().isJava9Compatible()) {
-        options.addBooleanOption('html5', true)
-    }
-}
-
-// Compilation configuration
-tasks.withType(JavaCompile) {
-    options.encoding = encoding
-}
-
-publishing {
-    publications {
-        maven(MavenPublication) {
-            from components.java
-
-            pom {
-                name = 'r-for-gradle'
-                description = 'Generate compile-time constants for all your resource files automatically, just like Android\'s R.java class.'
-                url = 'https://github.com/Voidstack/r-for-gradle'
-
-                licenses {
-                    license {
-                        name = 'Apache License, Version 2.0'
-                        url = 'https://www.apache.org/licenses/LICENSE-2.0.html'
-                    }
-                }
-
-                developers {
-                    developer {
-                        id = 'voidstack'
-                        name = 'Baptiste Martin'
-                        email = 'baptiste.martin56@outlook.fr'
-                    }
-                }
-
-                scm {
-                    connection = 'scm:git:git://github.com/Voidstack/r-for-gradle.git'
-                    developerConnection = 'scm:git:ssh://github.com:Voidstack/r-for-gradle.git'
-                    url = 'https://github.com/Voidstack/r-for-gradle'
-                }
+mavenPublishing{
+    coordinates("com.enosistudio", "r-for-gradle", "1.0.2")
+    pom {
+        name.set("r-for-gradle")
+        description.set("Generate compile-time constants for all your resource files automatically, just like Android's R.java class.")
+        inceptionYear.set("2025")
+        url.set("https://github.com/Voidstack/r-for-gradle/")
+        licenses{
+            license{
+                name.set("The Apache Software License, Version 2.0")
+                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
+                distribution.set("repo")
             }
         }
-    }
-
-    repositories {
-        maven {
-            name = "sonatype"
-            url = project.version.endsWith('SNAPSHOT')
-                ? "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-                : "https://s01.oss.sonatype.org/service/local/staging/deploy/maven2/"
-            credentials {
-                username = project.findProperty("sonatypeUsername") ?: System.getenv("SONATYPE_USERNAME") ?: ""
-                password = project.findProperty("sonatypePassword") ?: System.getenv("SONATYPE_PASSWORD") ?: ""
+       developers{
+            developer{
+                id.set("voidstack")
+                name.set("Baptiste Martin")
+                url.set("https://enosistudio.com")
             }
         }
+
+        scm{
+            url.set("https://github.com/Voidstack/r-for-gradle")
+            connection.set("scm:git:git://github.com/Voidstack/r-for-gradle.git")
+            developerConnection.set("scm:git:ssh://github.com:Voidstack/r-for-gradle.git")
+        }
     }
-}
-
-// GPG Signing (equivalent to maven-gpg-plugin)
-signing {
-    def signingKey = project.findProperty("signingKey") ?: System.getenv("SIGNING_KEY")
-    def signingPassword = project.findProperty("signingPassword") ?: System.getenv("SIGNING_PASSWORD")
-
-    if (signingKey) {
-        useInMemoryPgpKeys(signingKey, signingPassword)
-    } else {
-        // Fallback to default GPG configuration
-        useGpgCmd()
-    }
-
-    sign publishing.publications.maven
 }
