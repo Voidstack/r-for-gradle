@@ -2,7 +2,7 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.enosistudio/r-for-gradle.svg)](https://central.sonatype.com/artifact/com.enosistudio/r-for-gradle)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Java](https://img.shields.io/badge/Java-11%2B-brightgreen.svg)](https://openjdk.java.net/)
+[![Java](https://img.shields.io/badge/Java-17%2B-brightgreen.svg)](https://openjdk.java.net/)
 
 > **Type-safe hierarchical resource access for Java Gradle projects - inspired by Android's R.java!**
 
@@ -12,12 +12,11 @@ Generate a type-safe `R.java` class that mirrors your resource directory structu
 
 ## ✨ Features
 
-* 📁 **Hierarchical Structure** – Mirrors your `src/main/resources` directory
-* 🏗️ **Gradle Integration** – Generates during Gradle build
-* 🔤 **Smart Naming** – Converts file/folder names to camelCase Java identifiers
-* 📖 **Rich File API** – Read, stream, and manipulate paths easily
-* 📂 **Folder Methods** – Access folder metadata with `_self.getName()` and `_self.getPath()`
-* ⚡ **Fast Generation** – Lightweight and efficient
+- 📁 **Hierarchical Structure** - Mirrors your resources directory tree
+- 🏗️ **Build Integration** - Generates during Maven compilation  
+- 🔤 **Smart Naming** - Converts file/folder names to camelCase Java identifiers
+- 📂 **Folder Methods** - Access folder methods with `R.myFolder._self`
+- ⚡ **Fast Generation** - Lightweight and efficient
 
 ---
 
@@ -27,11 +26,11 @@ Add the plugin to your `build.gradle`:
 
 ```gradle
 plugins {
-    id "com.enosistudio.r-for-gradle" version "1.0.2"
+    id "com.enosistudio.r-for-gradle" version "latest-version"
 }
 
 dependencies {
-    implementation "com.enosistudio:r-for-gradle:1.0.2"
+    implementation "com.enosistudio:r-for-gradle:latest-version"
 }
 
 generateR{
@@ -66,11 +65,7 @@ InputStream logo = R.images.icons.logoPng.openStream();
 URL resource = R.templates.emailHtml.getURL();
 
 // Folder information
-String folderName = R.config._self.getName();     // "config"
-String folderPath = R.config._self.getPath();     // "config"
-
-// Compile-time safety 🛡️
-R.config.databseProperties.readContent(); // Won't compile - typo caught!
+String folderName = R.config._self.getName();
 ```
 
 ---
@@ -92,7 +87,6 @@ src/main/resources/
 ```
 
 **Generated R.java:**
-
 ```java
 package com.enosistudio.generated;
 
@@ -101,7 +95,7 @@ public final class R {
     
     public static final class config extends RFolder {
         public static final RFolder _self = new config();
-        private config() { super("config", "config"); }
+        private config() { super("config"); }
         
         public static final RFile databaseProperties = new RFile("config/database.properties");
         public static final RFile appSettingsYml = new RFile("config/app-settings.yml");
@@ -109,20 +103,17 @@ public final class R {
     
     public static final class templates extends RFolder {
         public static final RFolder _self = new templates();
-        private templates() { super("templates", "templates"); }
+        private templates() { super("templates"); }
         
         public static final RFile emailHtml = new RFile("templates/email.html");
         
         public static final class reports extends RFolder {
             public static final RFolder _self = new reports();
-            private reports() { super("reports", "templates/reports"); }
+            private reports() { super("templates/reports"); }
             
             public static final RFile invoicePdf = new RFile("templates/reports/invoice.pdf");
         }
     }
-    
-    public static class RFolder { /* folder methods */ }
-    public static final class RFile { /* rich file API */ }
 }
 ```
 
@@ -142,9 +133,31 @@ public final class R {
 
 ## 🔧 Requirements
 
-* ☕ Java 11+
+* ☕ Java 17+
 * 🔨 Gradle 7+
 
 ---
 
-⭐ **Star this repo if it helps!**
+## 📙 Other
+
+### Why no `File` or `Path` conversion methods?
+
+Resources should **never** be manipulated as `File` or `Path` objects. Here's why:
+
+- **JAR resources are not files** - They exist as compressed entries within an archive
+- **No filesystem access** - Resources in JARs have no valid file path
+- **Read-only nature** - Resources cannot be modified at runtime
+- **Performance overhead** - Converting to temp files wastes disk space and memory
+
+**Exception:** If a legacy library absolutely requires a `File` object, you must manually copy the resource to a temporary file. However, this should be a last resort, not the default behavior.
+
+For this reason, I don't plan to add any methods related to `java.io.File` or `java.nio.file.Path` objects.
+
+---
+
+## 🤝 Contributing
+
+* ☕ [Buy me a coffee](https://buymeacoffee.com/enosistudio)
+* ⭐ If you find this project helpful, please give it a star — it really helps!
+
+---

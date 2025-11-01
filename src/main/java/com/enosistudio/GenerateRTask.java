@@ -76,7 +76,8 @@ public class GenerateRTask extends DefaultTask {
 
     /**
      * Generates the R.java class with hierarchical structure based on the resources' directory.
-     * @param outputDir the directory to write the R.java file to
+     *
+     * @param outputDir        the directory to write the R.java file to
      * @param resourcesDirFile the resources directory to scan
      * @throws IOException if an I/O error occurs
      */
@@ -89,8 +90,9 @@ public class GenerateRTask extends DefaultTask {
 
     /**
      * Generates the main R.java class with hierarchical structure.
+     *
      * @param outputDir the directory to write the R.java file to
-     * @param rootNode the root ResourceNode representing the resources
+     * @param rootNode  the root ResourceNode representing the resources
      * @throws IOException if an I/O error occurs
      */
     private void generateMainRClass(File outputDir, ResourceNode rootNode) throws IOException {
@@ -121,8 +123,9 @@ public class GenerateRTask extends DefaultTask {
 
     /**
      * Recursively generates fields and nested classes for a ResourceNode.
+     *
      * @param writer the FileWriter to write the class content to
-     * @param node the current ResourceNode
+     * @param node   the current ResourceNode
      * @param indent current indentation level
      * @throws IOException if an I/O error occurs
      */
@@ -143,8 +146,8 @@ public class GenerateRTask extends DefaultTask {
                     %s
                     %spublic static final class %s extends RFolder {
                     %s    public static final RFolder _self = new %s();
-                    %s    private %s() { super("%s", "%s"); }
-                    """, indent, indent, className, indent, className, indent, className, folderName, childNode.path));
+                    %s    private %s() { super("%s"); }
+                    """, indent, indent, className, indent, className, indent, className, childNode.path));
 
             // Generate nested content (files and subfolders)
             generateNodeFields(writer, childNode, indent + "    ");
@@ -156,6 +159,7 @@ public class GenerateRTask extends DefaultTask {
 
     /**
      * Builds a tree representation of the resources' directory.
+     *
      * @param resourcesDirFile the resources directory
      * @return the root ResourceNode
      */
@@ -167,7 +171,8 @@ public class GenerateRTask extends DefaultTask {
 
     /**
      * Recursively scans the resources directory and builds a tree of ResourceNode and ResourceFile.
-     * @param dir current directory to scan
+     *
+     * @param dir         current directory to scan
      * @param currentPath relative path from resources root
      * @param currentNode current ResourceNode to populate
      */
@@ -197,6 +202,7 @@ public class GenerateRTask extends DefaultTask {
     /**
      * Converts a string to a valid Java variable name by replacing invalid characters with underscores
      * and converting to camelCase.
+     *
      * @param name the original name
      * @return a valid Java variable name
      */
@@ -220,6 +226,7 @@ public class GenerateRTask extends DefaultTask {
     /**
      * Converts a string to a valid Java class name by replacing invalid characters with underscores
      * and converting to PascalCase.
+     *
      * @param name the original name
      * @return a valid Java class name
      */
@@ -242,10 +249,11 @@ public class GenerateRTask extends DefaultTask {
 
     /**
      * Represents a node in the resource tree, which can be a folder containing files and subfolders.
-     * @param name the folder name
-     * @param path the relative path from resources root
+     *
+     * @param name     the folder name
+     * @param path     the relative path from resources root
      * @param children map of child folder names to their ResourceNode
-     * @param files list of ResourceFile objects in this folder
+     * @param files    list of ResourceFile objects in this folder
      */
     private record ResourceNode(String name, String path, Map<String, ResourceNode> children,
                                 List<ResourceFile> files) {
@@ -256,6 +264,7 @@ public class GenerateRTask extends DefaultTask {
 
     /**
      * Represents a resource file with name and path.
+     *
      * @param name the file name
      * @param path the relative path from resources root
      */

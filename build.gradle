@@ -1,10 +1,10 @@
 plugins {
-    id("java")
-    id "com.vanniktech.maven.publish" version "0.34.0"
+    id('java-gradle-plugin')
+    id 'com.vanniktech.maven.publish' version '0.34.0'
 }
 
 group = 'com.enosistudio'
-version = '1.0.2'
+version = '1.0.3'
 
 // Properties equivalent to Maven properties
 ext {
@@ -14,6 +14,15 @@ ext {
 java {
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
+}
+
+gradlePlugin {
+    plugins {
+        rForGradle {
+            id = 'com.enosistudio.r-for-gradle'
+            implementationClass = 'com.enosistudio.GenerateRPlugin'
+        }
+    }
 }
 
 repositories {
@@ -37,31 +46,31 @@ tasks.test {
 }
 
 mavenPublishing{
-    coordinates("com.enosistudio", "r-for-gradle", "1.0.2")
+    coordinates('com.enosistudio', 'r-for-gradle', '1.0.3')
     pom {
-        name.set("r-for-gradle")
-        description.set("Generate compile-time constants for all your resource files automatically, just like Android's R.java class.")
-        inceptionYear.set("2025")
-        url.set("https://github.com/Voidstack/r-for-gradle/")
+        name.set('r-for-gradle')
+        description.set('Generate compile-time constants for all your resource files automatically, just like Android\'s R.java class.')
+        inceptionYear.set('2025')
+        url.set('https://github.com/Voidstack/r-for-gradle/')
         licenses{
             license{
-                name.set("The Apache Software License, Version 2.0")
-                url.set("https://www.apache.org/licenses/LICENSE-2.0.txt")
-                distribution.set("repo")
+                name.set('The Apache Software License, Version 2.0')
+                url.set('https://www.apache.org/licenses/LICENSE-2.0.txt')
+                distribution.set('repo')
             }
         }
        developers{
             developer{
-                id.set("voidstack")
-                name.set("Baptiste Martin")
-                url.set("https://enosistudio.com")
+                id.set('voidstack')
+                name.set('Baptiste Martin')
+                url.set('https://enosistudio.com')
             }
         }
 
         scm{
-            url.set("https://github.com/Voidstack/r-for-gradle")
-            connection.set("scm:git:git://github.com/Voidstack/r-for-gradle.git")
-            developerConnection.set("scm:git:ssh://github.com:Voidstack/r-for-gradle.git")
+            url.set('https://github.com/Voidstack/r-for-gradle')
+            connection.set('scm:git:git://github.com/Voidstack/r-for-gradle.git')
+            developerConnection.set('scm:git:ssh://github.com:Voidstack/r-for-gradle.git')
         }
     }
 }
